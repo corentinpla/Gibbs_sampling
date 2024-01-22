@@ -302,16 +302,13 @@ production_index = np.random.rand(100)
 features = np.random.rand(100, 10)
 
 
-# Function to predict using the selected variables
 def make_predictions(features, coefficients):
     return np.dot(features, coefficients)
 
-# Function for mean imputation
 def mean_imputation(data):
     imputer = SimpleImputer(strategy='mean')
     return imputer.fit_transform(data)
 
-# Plotting function for the posterior density of q
 def plot_posterior_density(q_posterior):
     plt.figure(figsize=(8, 6))
     plt.hist(q_posterior, bins=20, density=True, alpha=0.5, color='blue')
@@ -320,7 +317,6 @@ def plot_posterior_density(q_posterior):
     plt.ylabel('Density')
     plt.show()
 
-# Plotting function for prediction comparison
 def plot_prediction_comparison(actual, predicted_all, predicted_subset):
     plt.figure(figsize=(10, 6))
     plt.plot(actual, label='Actual', marker='o')
@@ -332,28 +328,21 @@ def plot_prediction_comparison(actual, predicted_all, predicted_subset):
     plt.legend()
     plt.show()
 
-# Perform Gibbs sampling
 num_iterations = 100000
 q_posterior = gibbs_sampler(features, num_iterations)
 
-# Plot the posterior density of q
 plot_posterior_density(q_posterior)
 
-# Select variables based on q
 selected_variables = features[:, q_posterior.mean(axis=0) > 0.55]
 
-# Perform mean imputation
 features_imputed = mean_imputation(selected_variables)
 
-# Perform Lasso regression for the entire dataset
 coefficients_all = perform_lasso(features_imputed[:-10], production_index[:-10], alpha=0.1)
 
-# Perform Lasso regression for the subset
 coefficients_subset = perform_lasso(features_imputed[:-10], production_index[:-10], alpha=0.1)
 
-# Make predictions
 predictions_all = make_predictions(features_imputed[-10:], coefficients_all)
 predictions_subset = make_predictions(features_imputed[-10:], coefficients_subset)
 
-# Plot prediction comparison
+
 plot_prediction_comparison(production_index[-10:], predictions_all, predictions_subset)
